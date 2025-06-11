@@ -5,11 +5,103 @@
   --foreground: #171717;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Custom theme variables for Tailwind v4 compatibility */
+:root {
+  --tw-color-background: var(--background);
+  --tw-color-foreground: var(--foreground);
+  --tw-font-sans: var(--font-geist-sans);
+  --tw-font-mono: var(--font-geist-mono);
+}
+
+/* Force Tailwind styles to load properly */
+.bg-gradient-to-br {
+  background-image: linear-gradient(to bottom right, var(--tw-gradient-stops)) !important;
+}
+
+.bg-gradient-to-r {
+  background-image: linear-gradient(to right, var(--tw-gradient-stops)) !important;
+}
+
+.from-blue-50 {
+  --tw-gradient-from: #eff6ff !important;
+  --tw-gradient-to: rgb(239 246 255 / 0) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+.via-white {
+  --tw-gradient-to: rgb(255 255 255 / 0) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), #ffffff, var(--tw-gradient-to) !important;
+}
+
+.to-purple-50 {
+  --tw-gradient-to: #faf5ff !important;
+}
+
+.from-blue-600 {
+  --tw-gradient-from: #2563eb !important;
+  --tw-gradient-to: rgb(37 99 235 / 0) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+.to-purple-600 {
+  --tw-gradient-to: #9333ea !important;
+}
+
+.to-blue-300 {
+  --tw-gradient-to: #93c5fd !important;
+}
+
+.hover\:from-blue-700:hover {
+  --tw-gradient-from: #1d4ed8 !important;
+}
+
+.hover\:from-blue-300:hover {
+  --tw-gradient-to: #93c5fd !important;
+}
+
+.hover\:to-purple-700:hover {
+  --tw-gradient-to: #7c3aed !important;
+}
+
+/* Ensure button styles work */
+.btn-gradient {
+  background: linear-gradient(to right, #2563eb, #93c5fd) !important;
+  color: white !important;
+  padding: 0.75rem 1rem !important;
+  border-radius: 0.5rem !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease-in-out !important;
+  border: none !important;
+  cursor: pointer !important;
+}
+
+.btn-gradient:hover {
+  background: linear-gradient(to right, #1d4ed8, #93c5fd) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3) !important;
+}
+
+/* Ensure form inputs work */
+.form-input {
+  width: 100% !important;
+  padding: 0.75rem !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 0.5rem !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.form-input:focus {
+  outline: none !important;
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+}
+
+/* Ensure card styles work */
+.card {
+  background: white !important;
+  border-radius: 1rem !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1) !important;
+  border: 1px solid #f3f4f6 !important;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -23,4 +115,219 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.auth-container {
+  width: 100%;
+  max-width: 400px; /* Lebar maksimum form login */
+  margin: 0 auto; /* Pusatkan form */
+  padding: 20px;
+}
+
+/* Pastikan halaman login tidak tercrop */
+.login-page {
+  min-height: 100vh;
+  min-height: 100dvh; /* Dynamic viewport height untuk mobile */
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* Responsive design untuk mobile */
+@media (max-width: 640px) {
+  .login-form {
+    margin: 1rem;
+    padding: 1.5rem;
+    max-width: calc(100vw - 2rem);
+  }
+}
+
+/* Custom animations untuk sidebar dan navbar */
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Sidebar animations */
+.sidebar-enter {
+  animation: slideInLeft 0.3s ease-out;
+}
+
+/* Dropdown animations */
+.dropdown-enter {
+  animation: fadeInDown 0.2s ease-out;
+}
+
+/* Hover effects untuk sidebar items */
+.sidebar-item {
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.5s;
+}
+
+.sidebar-item:hover::before {
+  left: 100%;
+}
+
+/* Custom scrollbar untuk sidebar */
+.sidebar-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Smooth transitions */
+* {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Focus styles */
+.focus-ring:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+}
+
+/* Glass effect */
+.glass-effect {
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Sidebar toggle animations */
+@keyframes slideOutLeft {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+}
+
+.sidebar-open {
+  transform: translateX(0);
+  opacity: 1;
+  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+.sidebar-closed {
+  transform: translateX(-100%);
+  opacity: 0;
+  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+/* Mobile overlay */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 30;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+}
+
+.sidebar-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Main content transitions */
+.main-content {
+  transition: margin-left 0.3s ease-in-out;
+}
+
+.main-content-expanded {
+  margin-left: 0;
+}
+
+.main-content-collapsed {
+  margin-left: 18rem; /* 72 * 0.25rem = 18rem */
+}
+
+/* Responsive sidebar */
+@media (max-width: 1024px) {
+  .sidebar-mobile {
+    position: fixed;
+    z-index: 40;
+  }
+
+  .main-content-mobile {
+    margin-left: 0 !important;
+  }
+}
+
+/* Toggle button animations */
+.toggle-button {
+  transition: transform 0.2s ease-in-out;
+}
+
+.toggle-button:hover {
+  transform: scale(1.05);
+}
+
+.toggle-button:active {
+  transform: scale(0.95);
 }

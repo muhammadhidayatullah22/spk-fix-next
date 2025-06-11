@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model kriteria {
+  ID    Int            @id @default(autoincrement())
+  NAMA  String         @unique(map: "NAMA") @db.VarChar(255)
+  BOBOT Decimal        @db.Decimal(5, 2)
+  JENIS kriteria_JENIS
+
+  penilaian penilaian[] // ⬅️ relasi balik
+}
+
+model penilaian {
+  ID          Int     @id @default(autoincrement())
+  SISWA_ID    Int
+  KRITERIA_ID Int
+  NILAI       Decimal @db.Decimal(5, 2)
+
+  siswa    siswa    @relation(fields: [SISWA_ID], references: [ID])
+  kriteria kriteria @relation(fields: [KRITERIA_ID], references: [ID])
+
+  @@unique([SISWA_ID, KRITERIA_ID], map: "SISWA_ID")
+  @@index([KRITERIA_ID], map: "KRITERIA_ID")
+}
+
+model siswa {
+  ID             Int     @id @default(autoincrement())
+  NAMA           String  @db.VarChar(255)
+  NIS            String  @unique(map: "NIS") @db.VarChar(255)
+  KELAS          String  @db.VarChar(255)
+  NAMA_ORANG_TUA String? @db.VarChar(255)
+  ALAMAT         String? @db.Text
+
+  penilaian penilaian[] // ⬅️ relasi balik
+}
+
+model user {
+  ID       Int       @id @default(autoincrement())
+  NAMA     String    @db.VarChar(255)
+  USERNAME String    @unique(map: "USERNAME") @db.VarChar(255)
+  PASSWORD String    @db.VarChar(255)
+  ROLE     user_ROLE
+}
+
+enum kriteria_JENIS {
+  cost
+  benefit
+}
+
+enum user_ROLE {
+  admin
+  guru
+  kepala_sekolah @map("kepala sekolah")
+}
