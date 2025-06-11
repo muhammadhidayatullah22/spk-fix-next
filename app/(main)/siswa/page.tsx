@@ -146,7 +146,7 @@ export default function SiswaPage() {
                 placeholder="Cari berdasarkan nama, NIS, atau kelas..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-black"
               />
             </div>
           </div>
@@ -221,7 +221,6 @@ export default function SiswaPage() {
                           </div>
                           <div className="ml-4">
                             <div className="text-sm font-medium text-gray-900">{siswa.NAMA}</div>
-                            <div className="text-sm text-gray-500">ID: {siswa.ID}</div>
                           </div>
                         </div>
                       </td>

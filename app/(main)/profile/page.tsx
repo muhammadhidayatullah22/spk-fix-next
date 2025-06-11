@@ -189,12 +189,7 @@ export default function ProfilePage() {
     <div className="space-y-6">
       {/* Header Section */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <div className="text-center">
-          <div className=" bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-2xl font-bold text-white">
-              {user?.nama.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
-            </span>
-          </div>
+        <div className="text-left">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Profil Pengguna</h1>
           <p className="text-gray-600">Kelola informasi akun dan keamanan Anda</p>
         </div>

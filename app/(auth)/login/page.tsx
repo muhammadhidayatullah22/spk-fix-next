@@ -40,7 +40,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="login-page min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 px-4">
+    <div className="login-page min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-50 px-4">
       <div className="login-form bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md border border-gray-100 backdrop-blur-sm card">
         {/* Logo and Title */}
         <div className="text-center mb-8">
@@ -77,7 +77,7 @@ export default function LoginPage() {
                 name="username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-900 placeholder-gray-500 form-input"
+                className="w-full pl-10 pr-4 py-3 text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-900 placeholder-gray-500 form-input"
                 placeholder="Masukkan username"
                 required
                 disabled={isLoading}
@@ -99,7 +99,7 @@ export default function LoginPage() {
                 name="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-900 placeholder-gray-500 form-input"
+                className="w-full pl-10 pr-12 py-3 text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-900 placeholder-gray-500 form-input"
                 placeholder="Masukkan password"
                 required
                 disabled={isLoading}

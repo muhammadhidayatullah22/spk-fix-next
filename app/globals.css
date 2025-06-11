@@ -47,6 +47,10 @@
   --tw-gradient-to: #9333ea !important;
 }
 
+.to-blue-50 {
+  --tw-gradient-to: #eff6ff !important;
+}
+
 .to-blue-300 {
   --tw-gradient-to: #93c5fd !important;
 }

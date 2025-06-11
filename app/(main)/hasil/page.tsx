@@ -76,12 +76,7 @@ export default function HasilPage() {
     <div className="space-y-6">
       {/* Header Section */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <div className="text-center">
-          <div className="w-16 h-16 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-            </svg>
-          </div>
+        <div className="text-left">          
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Hasil Penentuan Siswa Berprestasi</h1>
           <p className="text-gray-600">Metode Simple Additive Weighting (SAW)</p>
         </div>
@@ -156,9 +151,9 @@ export default function HasilPage() {
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Cari Siswa</label>
+            <label className="block text-sm font-medium mb-2 text-black">Cari Siswa</label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-black">
                 <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
@@ -168,17 +163,17 @@ export default function HasilPage() {
                 placeholder="Nama atau NIS..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-black"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Filter Kelas</label>
+            <label className="block text-sm font-medium mb-2 text-black">Filter Kelas</label>
             <select
               value={selectedKelas}
               onChange={(e) => setSelectedKelas(e.target.value)}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+              className="block w-full px-3 py-2 text-black border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
             >
               <option value="">Semua Kelas</option>
               {uniqueKelas.map(kelas => (
