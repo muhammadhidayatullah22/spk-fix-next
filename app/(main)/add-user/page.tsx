@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import ProtectedRoute from '@/components/ProtectedRoute';
+import { PERMISSIONS } from '@/lib/rbac';
 
 interface User {
   ID: number;
@@ -238,14 +240,15 @@ export default function AddUserPage() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header Section */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Manajemen Pengguna</h1>
-            <p className="text-gray-600 mt-1">Kelola akun pengguna dan hak akses sistem</p>
-          </div>
+    <ProtectedRoute requiredPermission={PERMISSIONS.CREATE_USER}>
+      <div className="space-y-6">
+        {/* Header Section */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Manajemen Pengguna</h1>
+              <p className="text-gray-600 mt-1">Kelola akun pengguna dan hak akses sistem</p>
+            </div>
           <button
             onClick={handleAddClick}
             className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-300 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-purple-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-lg"
@@ -418,12 +421,13 @@ export default function AddUserPage() {
           </div>
         )}
       </div>
-      <UserModal
-        isOpen={isModalOpen}
-        onClose={handleModalClose}
-        onSave={handleModalSave}
-        editingUser={editingUser}
-      />
-    </div>
+        <UserModal
+          isOpen={isModalOpen}
+          onClose={handleModalClose}
+          onSave={handleModalSave}
+          editingUser={editingUser}
+        />
+      </div>
+    </ProtectedRoute>
   );
-} 
+}

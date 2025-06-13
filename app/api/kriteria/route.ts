@@ -1,9 +1,16 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { getSessionUser, canWrite } from '@/lib/auth-utils';
 
 // GET: Get all criteria
 export async function GET() {
   try {
+    // Check authentication
+    const sessionUser = await getSessionUser();
+    if (!sessionUser) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
     const kriteria = await prisma.kriteria.findMany();
     return NextResponse.json(kriteria, { status: 200 });
   } catch (error) {
@@ -15,6 +22,17 @@ export async function GET() {
 // POST: Create a new criterion
 export async function POST(request: Request) {
   try {
+    // Check authentication and authorization
+    const sessionUser = await getSessionUser();
+    if (!sessionUser) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Only admin and guru can create criteria
+    if (!canWrite(sessionUser)) {
+      return NextResponse.json({ message: 'Forbidden: Only admin and guru can create criteria' }, { status: 403 });
+    }
+
     const { NAMA, BOBOT, JENIS } = await request.json();
 
     if (!NAMA || !BOBOT || !JENIS) {

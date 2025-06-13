@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import prisma from '@/lib/prisma';
+import { getSessionUser, canManageUsers } from '@/lib/auth-utils';
 
 // GET: Get a single user by ID
 export async function GET(request: Request, { params }: { params: { id: string } }) {
@@ -10,6 +11,12 @@ export async function GET(request: Request, { params }: { params: { id: string }
   }
 
   try {
+    // Check authentication
+    const sessionUser = await getSessionUser();
+    if (!sessionUser) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
     const user = await prisma.user.findUnique({
       where: { ID: id },
       select: { ID: true, NAMA: true, USERNAME: true, ROLE: true } // Jangan sertakan password
@@ -34,6 +41,17 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   }
 
   try {
+    // Check authentication and authorization
+    const sessionUser = await getSessionUser();
+    if (!sessionUser) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Only admin can update users
+    if (!canManageUsers(sessionUser)) {
+      return NextResponse.json({ message: 'Forbidden: Only admin can update users' }, { status: 403 });
+    }
+
     const { NAMA, USERNAME, PASSWORD, ROLE } = await request.json();
 
     if (!NAMA || !USERNAME || !ROLE) {
@@ -83,6 +101,17 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
   }
 
   try {
+    // Check authentication and authorization
+    const sessionUser = await getSessionUser();
+    if (!sessionUser) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Only admin can delete users
+    if (!canManageUsers(sessionUser)) {
+      return NextResponse.json({ message: 'Forbidden: Only admin can delete users' }, { status: 403 });
+    }
+
     await prisma.user.delete({
       where: { ID: id },
     });
@@ -94,4 +123,4 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
     }
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
   }
-} 
+}

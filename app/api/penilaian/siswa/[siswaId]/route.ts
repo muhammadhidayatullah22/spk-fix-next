@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { getSessionUser, canWrite } from '@/lib/auth-utils';
 
 // GET: Get all assessments for a specific student
 export async function GET(request: Request, { params }: { params: { siswaId: string } }) {
@@ -10,6 +11,12 @@ export async function GET(request: Request, { params }: { params: { siswaId: str
   }
 
   try {
+    // Check authentication
+    const sessionUser = await getSessionUser();
+    if (!sessionUser) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
     const penilaian = await prisma.penilaian.findMany({
       where: {
         SISWA_ID: siswaId,
@@ -41,6 +48,17 @@ export async function POST(request: Request, { params }: { params: { siswaId: st
   }
 
   try {
+    // Check authentication and authorization
+    const sessionUser = await getSessionUser();
+    if (!sessionUser) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Only admin and guru can create/update assessments
+    if (!canWrite(sessionUser)) {
+      return NextResponse.json({ message: 'Forbidden: Only admin and guru can create/update assessments' }, { status: 403 });
+    }
+
     const { assessments } = await request.json();
 
     if (!Array.isArray(assessments)) {

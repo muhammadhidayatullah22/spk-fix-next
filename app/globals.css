@@ -335,3 +335,268 @@ body {
 .toggle-button:active {
   transform: scale(0.95);
 }
+
+/* Login form input field fixes */
+.login-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.login-input-icon-left {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  pointer-events: none;
+  color: #9ca3af;
+}
+
+.login-input-icon-right {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  cursor: pointer;
+  color: #9ca3af;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease-in-out;
+}
+
+.login-input-icon-right:hover {
+  color: #6b7280;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.login-input-with-left-icon {
+  padding-left: 48px !important;
+}
+
+.login-input-with-right-icon {
+  padding-right: 48px !important;
+}
+
+.login-input-with-both-icons {
+  padding-left: 48px !important;
+  padding-right: 48px !important;
+}
+
+/* Ensure proper spacing and no overlap */
+.login-form input[type="text"],
+.login-form input[type="password"] {
+  position: relative;
+  z-index: 1;
+  background-color: #ffffff !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 8px !important;
+  font-size: 16px !important;
+  line-height: 1.5 !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.login-form input[type="text"]:focus,
+.login-form input[type="password"]:focus {
+  outline: none !important;
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+}
+
+.login-form input[type="text"]:focus + .login-input-icon-left,
+.login-form input[type="password"]:focus + .login-input-icon-left,
+.login-form input[type="text"]:focus ~ .login-input-icon-right,
+.login-form input[type="password"]:focus ~ .login-input-icon-right {
+  color: #3b82f6 !important;
+}
+
+/* Disabled state */
+.login-form input[type="text"]:disabled,
+.login-form input[type="password"]:disabled {
+  background-color: #f9fafb !important;
+  cursor: not-allowed !important;
+  opacity: 0.6 !important;
+}
+
+.login-form input[type="text"]:disabled + .login-input-icon-left,
+.login-form input[type="password"]:disabled + .login-input-icon-left,
+.login-form input[type="text"]:disabled ~ .login-input-icon-right,
+.login-form input[type="password"]:disabled ~ .login-input-icon-right {
+  color: #d1d5db !important;
+  cursor: not-allowed !important;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 640px) {
+  .login-input-with-left-icon {
+    padding-left: 44px !important;
+  }
+
+  .login-input-with-right-icon {
+    padding-right: 44px !important;
+  }
+
+  .login-input-with-both-icons {
+    padding-left: 44px !important;
+    padding-right: 44px !important;
+  }
+
+  .login-input-icon-left {
+    left: 10px;
+  }
+
+  .login-input-icon-right {
+    right: 10px;
+  }
+}
+
+/* Print styles untuk halaman hasil */
+@media print, .printing {
+  /* Hide elements that shouldn't be printed */
+  .print\\:hidden,
+  .no-print,
+  nav,
+  .sidebar,
+  button,
+  .filter-section {
+    display: none !important;
+  }
+
+  /* Ensure proper page layout */
+  body {
+    margin: 0 !important;
+    padding: 20px !important;
+    font-size: 12px !important;
+    line-height: 1.4 !important;
+    color: black !important;
+    background: white !important;
+  }
+
+  /* Print header */
+  .print-header {
+    display: block !important;
+    text-align: center !important;
+    margin-bottom: 20px !important;
+    border-bottom: 2px solid black !important;
+    padding-bottom: 10px !important;
+  }
+
+  .print-header h1 {
+    font-size: 18px !important;
+    margin: 0 0 5px 0 !important;
+    color: black !important;
+  }
+
+  .print-header p {
+    font-size: 14px !important;
+    margin: 0 !important;
+    color: black !important;
+  }
+
+  /* Table styles for print */
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin: 0 !important;
+    font-size: 11px !important;
+  }
+
+  th, td {
+    border: 1px solid black !important;
+    padding: 8px 4px !important;
+    text-align: left !important;
+    color: black !important;
+    background: white !important;
+  }
+
+  th {
+    background-color: #f0f0f0 !important;
+    font-weight: bold !important;
+    font-size: 10px !important;
+  }
+
+  /* Remove gradients and complex styling */
+  .bg-gradient-to-r,
+  .bg-blue-100,
+  .bg-green-100,
+  .bg-yellow-100,
+  .bg-gray-100 {
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Simplify badges for print */
+  .inline-flex {
+    display: inline !important;
+    padding: 2px 4px !important;
+    border: 1px solid black !important;
+    border-radius: 0 !important;
+    font-size: 9px !important;
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Page breaks */
+  .page-break {
+    page-break-before: always !important;
+  }
+
+  /* Ensure content fits on page */
+  .overflow-x-auto {
+    overflow: visible !important;
+  }
+
+  /* Print date */
+  .print-date {
+    display: block !important;
+    text-align: right !important;
+    margin-bottom: 10px !important;
+    font-size: 10px !important;
+    color: black !important;
+  }
+
+  /* Print footer */
+  .print-footer {
+    display: block !important;
+    text-align: center !important;
+    margin-top: 20px !important;
+    border-top: 1px solid black !important;
+    padding-top: 10px !important;
+    font-size: 10px !important;
+    color: black !important;
+  }
+}
+
+/* Styling untuk print */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  
+  .printing,
+  .printing * {
+    visibility: visible;
+  }
+  
+  .printing {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+  
+  .print\:hidden {
+    display: none !important;
+  }
+  
+  .print\:block {
+    display: block !important;
+  }
+}
+
+/* Tambahkan style untuk elemen yang sedang dicetak */
+.printing {
+  background: white;
+  padding: 20px;
+}

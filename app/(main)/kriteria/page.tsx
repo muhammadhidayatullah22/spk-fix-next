@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import { canCreate, canUpdate, canDelete, User } from '@/lib/rbac';
 // import KriteriaModal from '@/components/KriteriaModal'; // Akan dibuat nanti
 
 interface Kriteria {
@@ -130,7 +132,7 @@ const KriteriaModal: React.FC<KriteriaModalProps> = ({ isOpen, onClose, onSave, 
               name="NAMA"
               value={formData.NAMA}
               onChange={handleChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 form-input"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 form-input text-black"
               placeholder="Contoh: Nilai Akademik, Prestasi, dll"
               required
             />
@@ -146,7 +148,7 @@ const KriteriaModal: React.FC<KriteriaModalProps> = ({ isOpen, onClose, onSave, 
               name="BOBOT"
               value={formData.BOBOT}
               onChange={handleChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 form-input"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 form-input text-black"
               placeholder="0.01 - 1.00"
               step="0.01"
               min="0.01"
@@ -165,7 +167,7 @@ const KriteriaModal: React.FC<KriteriaModalProps> = ({ isOpen, onClose, onSave, 
               name="JENIS"
               value={formData.JENIS}
               onChange={handleChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 form-input"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 form-input text-black"
               required
             >
               <option value="benefit">Benefit (Semakin tinggi semakin baik)</option>
@@ -222,6 +224,7 @@ export default function KriteriaPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedJenis, setSelectedJenis] = useState('');
+  const { user } = useAuth();
 
   const fetchKriteria = async () => {
     setLoading(true);
@@ -382,15 +385,17 @@ export default function KriteriaPage() {
               <option value="cost">Cost</option>
             </select>
 
-            <button
-              onClick={handleAddClick}
-              className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium rounded-lg hover:from-purple-700 hover:to-pink-700 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200 btn-gradient"
-            >
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-              Tambah Kriteria
-            </button>
+            {canCreate(user as User, 'criteria') && (
+              <button
+                onClick={handleAddClick}
+                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium rounded-lg hover:from-purple-700 hover:to-pink-700 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200 btn-gradient"
+              >
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                Tambah Kriteria
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -421,7 +426,7 @@ export default function KriteriaPage() {
                 : 'Tambahkan kriteria baru untuk memulai'
               }
             </p>
-            {!searchTerm && !selectedJenis && (
+            {!searchTerm && !selectedJenis && canCreate(user as User, 'criteria') && (
               <div className="mt-6">
                 <button
                   onClick={handleAddClick}
@@ -485,24 +490,28 @@ export default function KriteriaPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex items-center justify-end space-x-2">
-                        <button
-                          onClick={() => handleEdit(kriteria)}
-                          className="inline-flex items-center px-3 py-1 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors duration-200"
-                        >
-                          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                          </svg>
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDelete(kriteria.ID)}
-                          className="inline-flex items-center px-3 py-1 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors duration-200"
-                        >
-                          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                          Hapus
-                        </button>
+                        {canUpdate(user as User, 'criteria') && (
+                          <button
+                            onClick={() => handleEdit(kriteria)}
+                            className="inline-flex items-center px-3 py-1 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors duration-200"
+                          >
+                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            Edit
+                          </button>
+                        )}
+                        {canDelete(user as User, 'criteria') && (
+                          <button
+                            onClick={() => handleDelete(kriteria.ID)}
+                            className="inline-flex items-center px-3 py-1 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors duration-200"
+                          >
+                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            Hapus
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -512,27 +521,6 @@ export default function KriteriaPage() {
           </div>
         )}
       </div>
-
-      {/* Weight Validation Alert */}
-      {kriteriaList.length > 0 && Math.abs(totalBobot - 1) >= 0.01 && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
-          <div className="flex items-start">
-            <div className="flex-shrink-0">
-              <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-              </svg>
-            </div>
-            <div className="ml-3">
-              <h3 className="text-sm font-medium text-yellow-800">Peringatan Bobot Kriteria</h3>
-              <p className="text-sm text-yellow-700 mt-1">
-                Total bobot kriteria saat ini adalah <strong>{totalBobot.toFixed(2)}</strong>.
-                Untuk hasil yang optimal, total bobot harus sama dengan <strong>1.00</strong>.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Modal */}
       <KriteriaModal
         isOpen={isModalOpen}

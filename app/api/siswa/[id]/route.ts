@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { getSessionUser, canWrite } from '@/lib/auth-utils';
 
 // GET: Get student by ID
 export async function GET(request: Request, { params }: { params: { id: string } }) {
@@ -10,6 +11,12 @@ export async function GET(request: Request, { params }: { params: { id: string }
   }
 
   try {
+    // Check authentication
+    const sessionUser = await getSessionUser();
+    if (!sessionUser) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
     const siswa = await prisma.siswa.findUnique({
       where: {
         ID: id,
@@ -36,6 +43,17 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   }
 
   try {
+    // Check authentication and authorization
+    const sessionUser = await getSessionUser();
+    if (!sessionUser) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Only admin and guru can update students
+    if (!canWrite(sessionUser)) {
+      return NextResponse.json({ message: 'Forbidden: Only admin and guru can update students' }, { status: 403 });
+    }
+
     const { NAMA, NIS, KELAS, NAMA_ORANG_TUA, ALAMAT } = await request.json();
 
     const updatedSiswa = await prisma.siswa.update({
@@ -73,6 +91,17 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
   }
 
   try {
+    // Check authentication and authorization
+    const sessionUser = await getSessionUser();
+    if (!sessionUser) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Only admin and guru can delete students
+    if (!canWrite(sessionUser)) {
+      return NextResponse.json({ message: 'Forbidden: Only admin and guru can delete students' }, { status: 403 });
+    }
+
     await prisma.siswa.delete({
       where: {
         ID: id,
@@ -87,4 +116,4 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
     }
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
   }
-} 
+}

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { getSessionUser, canWrite } from '@/lib/auth-utils';
 
 // GET: Get a single criterion by ID
 export async function GET(request: Request, { params }: { params: { id: string } }) {
@@ -9,6 +10,12 @@ export async function GET(request: Request, { params }: { params: { id: string }
   }
 
   try {
+    // Check authentication
+    const sessionUser = await getSessionUser();
+    if (!sessionUser) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
     const kriteria = await prisma.kriteria.findUnique({
       where: { ID: id },
     });
@@ -32,6 +39,17 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   }
 
   try {
+    // Check authentication and authorization
+    const sessionUser = await getSessionUser();
+    if (!sessionUser) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Only admin and guru can update criteria
+    if (!canWrite(sessionUser)) {
+      return NextResponse.json({ message: 'Forbidden: Only admin and guru can update criteria' }, { status: 403 });
+    }
+
     const { NAMA, BOBOT, JENIS } = await request.json();
 
     if (!NAMA || !BOBOT || !JENIS) {
@@ -73,6 +91,17 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
   }
 
   try {
+    // Check authentication and authorization
+    const sessionUser = await getSessionUser();
+    if (!sessionUser) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Only admin and guru can delete criteria
+    if (!canWrite(sessionUser)) {
+      return NextResponse.json({ message: 'Forbidden: Only admin and guru can delete criteria' }, { status: 403 });
+    }
+
     await prisma.kriteria.delete({
       where: { ID: id },
     });
@@ -84,4 +113,4 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
     }
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
   }
-} 
+}

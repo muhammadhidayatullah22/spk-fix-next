@@ -1,6 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import { canRead, User } from '@/lib/rbac';
 
 interface SiswaResult {
   ID: number;
@@ -21,6 +23,9 @@ export default function HasilPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedKelas, setSelectedKelas] = useState('');
   const [showTopOnly, setShowTopOnly] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const { user } = useAuth();
+  const printRef = useRef<HTMLDivElement>(null);
 
   const fetchResults = async () => {
     setLoading(true);
@@ -45,7 +50,100 @@ export default function HasilPage() {
   }, []);
 
   const handlePrint = () => {
-    window.print();
+    // Check if there's data to print
+    if (displayResults.length === 0) {
+      alert('Tidak ada data untuk dicetak.');
+      return;
+    }
+
+    // Simple print using browser's native print function
+    try {
+      // Add print class to body to trigger print styles
+      document.body.classList.add('printing');
+
+      // Use setTimeout to ensure styles are applied
+      setTimeout(() => {
+        window.print();
+        // Remove print class after printing
+        document.body.classList.remove('printing');
+      }, 100);
+    } catch (error) {
+      console.error('Print error:', error);
+      alert('Gagal mencetak. Silakan coba lagi atau gunakan Ctrl+P.');
+      document.body.classList.remove('printing');
+    }
+  };
+
+  const handleDownloadPDF = async () => {
+    // Check if there's data to download
+    if (displayResults.length === 0) {
+      alert('Tidak ada data untuk didownload.');
+      return;
+    }
+
+    setIsDownloading(true);
+
+    try {
+      // Dynamic import untuk menghindari error saat build
+      const html2pdf = (await import('html2pdf.js')).default;
+
+      const element = printRef.current;
+      if (!element) {
+        alert('Elemen tidak ditemukan.');
+        return;
+      }
+
+      const opt = {
+        margin: [10, 10, 10, 10] as [number, number, number, number],
+        filename: `hasil-siswa-berprestasi-${new Date().toISOString().split('T')[0]}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: {
+          scale: 1.5,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          ignoreElements: (element: Element) => {
+            // Skip elements that might have problematic CSS
+            return element.classList.contains('print:hidden') ||
+                   element.classList.contains('no-print');
+          },
+          onclone: (clonedDoc: Document) => {
+            // Remove problematic CSS that uses modern color functions
+            const style = clonedDoc.createElement('style');
+            style.textContent = `
+              * {
+                color: rgb(0, 0, 0) !important;
+                background-color: rgb(255, 255, 255) !important;
+                border-color: rgb(209, 213, 219) !important;
+              }
+              .bg-blue-50 { background-color: rgb(239, 246, 255) !important; }
+              .bg-green-50 { background-color: rgb(240, 253, 244) !important; }
+              .bg-yellow-50 { background-color: rgb(254, 252, 232) !important; }
+              .bg-gray-50 { background-color: rgb(249, 250, 251) !important; }
+              .text-blue-600 { color: rgb(37, 99, 235) !important; }
+              .text-green-600 { color: rgb(22, 163, 74) !important; }
+              .text-yellow-600 { color: rgb(217, 119, 6) !important; }
+              .text-gray-600 { color: rgb(75, 85, 99) !important; }
+              .border-gray-200 { border-color: rgb(229, 231, 235) !important; }
+              .bg-gradient-to-r { background: linear-gradient(to right, rgb(37, 99, 235), rgb(147, 197, 253)) !important; }
+            `;
+            clonedDoc.head.appendChild(style);
+          }
+        },
+        jsPDF: {
+          unit: 'mm',
+          format: 'a4',
+          orientation: 'portrait' as 'portrait'
+        }
+      };
+
+      await html2pdf().set(opt).from(element).save();
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Gagal membuat PDF. Silakan gunakan tombol Cetak sebagai alternatif.');
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   // Get unique classes for filter
@@ -72,11 +170,28 @@ export default function HasilPage() {
     }
   };
 
+  // Check if user can read results
+  if (!canRead(user as User, 'results')) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="mb-4">
+            <svg className="mx-auto h-12 w-12 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Akses Ditolak</h3>
+          <p className="text-gray-600">Anda tidak memiliki izin untuk mengakses halaman hasil.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Header Section */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <div className="text-left">          
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 print:hidden">
+        <div className="text-left">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Hasil Penentuan Siswa Berprestasi</h1>
           <p className="text-gray-600">Metode Simple Additive Weighting (SAW)</p>
         </div>
@@ -94,7 +209,7 @@ export default function HasilPage() {
 
       {/* Statistics Cards */}
       {!loading && results.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 print:hidden">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <div className="flex items-center">
               <div className="flex-shrink-0">
@@ -148,7 +263,7 @@ export default function HasilPage() {
       )}
 
       {/* Filter Section */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 print:hidden">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
             <label className="block text-sm font-medium mb-2 text-black">Cari Siswa</label>
@@ -199,21 +314,61 @@ export default function HasilPage() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Aksi</label>
-            <button
-              onClick={handlePrint}
-              className="w-full inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors print:hidden"
-            >
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-              </svg>
-              Cetak
-            </button>
+            <div className="space-y-2">
+              <button
+                onClick={handlePrint}
+                className="w-full inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors print:hidden"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                </svg>
+                Cetak
+              </button>
+              <button
+                onClick={handleDownloadPDF}
+                disabled={isDownloading}
+                className="w-full inline-flex items-center justify-center px-4 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors print:hidden disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isDownloading ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Membuat PDF...
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Download PDF
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Results Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div ref={printRef} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        {/* Print Header - Hidden on screen, visible on print */}
+        <div className="print-header hidden print:block">
+          <h1>Hasil Penentuan Siswa Berprestasi</h1>
+          <p>Metode Simple Additive Weighting (SAW)</p>
+        </div>
+
+        {/* Print Date - Hidden on screen, visible on print */}
+        <div className="print-date hidden print:block">
+          Dicetak pada: {new Date().toLocaleDateString('id-ID', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          })}
+        </div>
+
         {loading ? (
           <div className="p-8 text-center">
             <div className="inline-flex items-center">
@@ -241,6 +396,10 @@ export default function HasilPage() {
           </div>
         ) : (
           <div className="overflow-x-auto">
+            <div className="p-6 print:block hidden">
+              <h1 className="text-2xl font-bold text-center mb-4">Hasil Penentuan Siswa Berprestasi</h1>
+              <p className="text-center text-gray-600 mb-6">Metode Simple Additive Weighting (SAW)</p>
+            </div>
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
@@ -317,6 +476,12 @@ export default function HasilPage() {
                 })}
               </tbody>
             </table>
+
+            {/* Print Footer - Hidden on screen, visible on print */}
+            <div className="print-footer hidden print:block">
+              <p>© 2024 SPK SAW - Sistem Penentuan Siswa Berprestasi</p>
+              <p>Total {displayResults.length} siswa dari {results.length} siswa keseluruhan</p>
+            </div>
           </div>
         )}
       </div>

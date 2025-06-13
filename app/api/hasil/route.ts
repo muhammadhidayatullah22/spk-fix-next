@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { getSessionUser } from '@/lib/auth-utils';
 
 interface Siswa {
   ID: number;
@@ -26,6 +27,12 @@ interface Penilaian {
 
 export async function GET() {
   try {
+    // Check authentication
+    const sessionUser = await getSessionUser();
+    if (!sessionUser) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
     const siswaList = await prisma.siswa.findMany();
     const kriteriaList = await prisma.kriteria.findMany();
     const penilaianList = await prisma.penilaian.findMany({

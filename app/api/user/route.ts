@@ -1,10 +1,18 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import prisma from '@/lib/prisma';
+import { getSessionUser, canManageUsers } from '@/lib/auth-utils';
 
 // GET: Get all users
 export async function GET() {
   try {
+    // Check authentication and authorization
+    const sessionUser = await getSessionUser();
+    if (!sessionUser) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Only users with read access can view users (all roles can read)
     const users = await prisma.user.findMany({
       select: { ID: true, NAMA: true, USERNAME: true, ROLE: true } // Jangan sertakan password
     });
@@ -17,6 +25,17 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    // Check authentication and authorization
+    const sessionUser = await getSessionUser();
+    if (!sessionUser) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Only admin can create users
+    if (!canManageUsers(sessionUser)) {
+      return NextResponse.json({ message: 'Forbidden: Only admin can create users' }, { status: 403 });
+    }
+
     const { NAMA, USERNAME, PASSWORD, ROLE } = await request.json();
 
     if (!NAMA || !USERNAME || !PASSWORD || !ROLE) {

@@ -8,6 +8,8 @@ import Navbar from '@/components/Navbar';
 import { useAuth } from '@/hooks/useAuth';
 import UserAvatar from '@/components/UserAvatar';
 import { SidebarProvider, useSidebar } from '@/contexts/SidebarContext';
+import { canAccessAddUser } from '@/lib/rbac';
+import { User } from '@/lib/rbac';
 
 // export const metadata: Metadata = { // Hapus definisi metadata di sini
 //   title: "Sistem Penentuan Siswa Berprestasi",
@@ -155,21 +157,24 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
                   )}
                 </Link>
               </li>
-              <li>
-                <Link href="/add-user" className={`sidebar-item group flex items-center px-3 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
-                  pathname === '/add-user'
-                    ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/25'
-                    : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-                }`}>
-                  <svg className="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                  </svg>
-                  <span>Tambah Pengguna</span>
-                  {pathname === '/add-user' && (
-                    <div className="ml-auto w-2 h-2 bg-white rounded-full"></div>
-                  )}
-                </Link>
-              </li>
+              {/* Only show Add User menu for admin */}
+              {user && canAccessAddUser(user as User) && (
+                <li>
+                  <Link href="/add-user" className={`sidebar-item group flex items-center px-3 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+                    pathname === '/add-user'
+                      ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/25'
+                      : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                  }`}>
+                    <svg className="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                    </svg>
+                    <span>Tambah Pengguna</span>
+                    {pathname === '/add-user' && (
+                      <div className="ml-auto w-2 h-2 bg-white rounded-full"></div>
+                    )}
+                  </Link>
+                </li>
+              )}
             </ul>
           </div>
         </nav>
