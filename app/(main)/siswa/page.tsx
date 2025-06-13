@@ -1,9 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import SiswaModal from '@/components/SiswaModal';
+import { SiswaModal, DeleteModal } from '@/components';
 import { useAuth } from '@/hooks/useAuth';
+import { useDeleteModal } from '@/hooks';
 import { canCreate, canUpdate, canDelete, User } from '@/lib/rbac';
+import { API_ENDPOINTS, MESSAGES } from '@/lib/constants';
 
 interface Siswa {
   ID: number;
@@ -24,6 +26,31 @@ export default function SiswaPage() {
   const [itemsPerPage] = useState(10);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
+
+  // Delete modal state using custom hook
+  const {
+    isModalOpen: isDeleteModalOpen,
+    isDeleting,
+    itemToDelete: siswaToDelete,
+    openDeleteModal,
+    closeDeleteModal,
+    confirmDelete,
+    error: deleteError,
+  } = useDeleteModal({
+    onDelete: async (id: number) => {
+      const response = await fetch(`${API_ENDPOINTS.SISWA}/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Gagal menghapus siswa');
+      }
+
+      fetchSiswa();
+    },
+    getItemName: (siswa: Siswa) => siswa.NAMA,
+  });
 
   const fetchSiswa = async () => {
     try {
@@ -56,26 +83,7 @@ export default function SiswaPage() {
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this student?')) {
-      return;
-    }
-    setError(null);
-    try {
-      const response = await fetch(`/api/siswa/${id}`, {
-        method: 'DELETE',
-      });
 
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message || 'Failed to delete siswa');
-      }
-
-      fetchSiswa(); // Refresh the list
-    } catch (err: any) {
-      setError(err.message || 'An unexpected error occurred while deleting siswa.');
-    }
-  };
 
   const handleModalClose = () => {
     setIsModalOpen(false);
@@ -126,13 +134,21 @@ export default function SiswaPage() {
         </div>
       </div>
 
-      {/* Error Alert */}
+      {/* Error Alerts */}
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center" role="alert">
           <svg className="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
           </svg>
           {error}
+        </div>
+      )}
+      {deleteError && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center" role="alert">
+          <svg className="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+          </svg>
+          {deleteError}
         </div>
       )}
 
@@ -254,7 +270,7 @@ export default function SiswaPage() {
                           )}
                           {canDelete(user as User, 'student') && (
                             <button
-                              onClick={() => handleDelete(siswa.ID)}
+                              onClick={() => openDeleteModal(siswa)}
                               className="inline-flex items-center px-3 py-1 text-xs font-medium text-red-600 bg-red-100 rounded-md hover:bg-red-200 transition-colors"
                             >
                               <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -341,12 +357,23 @@ export default function SiswaPage() {
           </>
         )}
       </div>
+      {/* Modals */}
       <SiswaModal
         isOpen={isModalOpen}
         onClose={handleModalClose}
         onSave={handleModalSave}
         editingSiswa={editingSiswa}
       />
+
+      <DeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={closeDeleteModal}
+        onConfirm={confirmDelete}
+        loading={isDeleting}
+        title="Hapus Siswa"
+        itemName={siswaToDelete?.NAMA}
+        message={`Apakah Anda yakin ingin menghapus siswa "${siswaToDelete?.NAMA}" dengan NIS ${siswaToDelete?.NIS}? Semua data penilaian terkait siswa ini akan ikut terhapus dan tidak dapat dikembalikan.`}
+      />
     </div>
   );
-} 
+}

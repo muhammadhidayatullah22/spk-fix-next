@@ -1,26 +1,19 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-
-interface Siswa {
-  ID: number;
-  NAMA: string;
-  NIS: string;
-  KELAS: string;
-  NAMA_ORANG_TUA?: string | null;
-  ALAMAT?: string | null;
-}
-
-interface SiswaModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSave: () => void;
-  editingSiswa: Siswa | null;
-}
+import { Alert, Button } from '@/components/ui';
+import { Siswa, SiswaModalProps } from '@/types/user';
 
 export default function SiswaModal({ isOpen, onClose, onSave, editingSiswa }: SiswaModalProps) {
-  const [formData, setFormData] = useState<Omit<Siswa, 'ID'> & { ID?: number }>({ NAMA: '', NIS: '', KELAS: '', NAMA_ORANG_TUA: '', ALAMAT: '' });
+  const [formData, setFormData] = useState<Omit<Siswa, 'ID'> & { ID?: number }>({
+    NAMA: '',
+    NIS: '',
+    KELAS: '',
+    NAMA_ORANG_TUA: '',
+    ALAMAT: ''
+  });
   const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (editingSiswa) {
@@ -39,6 +32,7 @@ export default function SiswaModal({ isOpen, onClose, onSave, editingSiswa }: Si
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setSaving(true);
 
     try {
       let response;
@@ -71,6 +65,8 @@ export default function SiswaModal({ isOpen, onClose, onSave, editingSiswa }: Si
       onClose(); // Close modal
     } catch (err: any) {
       setError(err.message || 'An unexpected error occurred.');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -81,7 +77,7 @@ export default function SiswaModal({ isOpen, onClose, onSave, editingSiswa }: Si
       <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-lg mx-auto transform scale-95 animate-scale-in border border-gray-200">
         <h2 className="text-3xl font-bold mb-6 text-gray-800 text-center">{editingSiswa ? 'Edit Detail Siswa' : 'Tambah Siswa Baru'}</h2>
         
-        {error && <p className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 text-sm" role="alert">{error}</p>}
+        {error && <Alert type="error" message={error} className="mb-4" />}
 
         <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-y-4">
           <div>
@@ -105,12 +101,22 @@ export default function SiswaModal({ isOpen, onClose, onSave, editingSiswa }: Si
             <textarea id="ALAMAT" name="ALAMAT" value={formData.ALAMAT || ''} onChange={handleChange} rows={3} className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-800" placeholder="Masukkan alamat lengkap"></textarea>
           </div>
           <div className="flex justify-end space-x-3 mt-6">
-            <button type="button" onClick={onClose} className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors duration-200">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={onClose}
+              disabled={saving}
+            >
               Batal
-            </button>
-            <button type="submit" className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200 shadow-md">
+            </Button>
+            <Button
+              type="submit"
+              variant="primary"
+              loading={saving}
+              className="bg-indigo-600 hover:bg-indigo-700"
+            >
               {editingSiswa ? 'Simpan Perubahan' : 'Tambah Siswa'}
-            </button>
+            </Button>
           </div>
         </form>
       </div>

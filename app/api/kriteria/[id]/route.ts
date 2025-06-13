@@ -102,14 +102,57 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
       return NextResponse.json({ message: 'Forbidden: Only admin and guru can delete criteria' }, { status: 403 });
     }
 
+    // Check if kriteria exists
+    const existingKriteria = await prisma.kriteria.findUnique({
+      where: { ID: id },
+    });
+
+    if (!existingKriteria) {
+      return NextResponse.json({ message: 'Kriteria not found' }, { status: 404 });
+    }
+
+    // Check if there are any penilaian records using this kriteria
+    const relatedPenilaian = await prisma.penilaian.findMany({
+      where: { KRITERIA_ID: id },
+      include: {
+        siswa: {
+          select: { NAMA: true }
+        }
+      }
+    });
+
+    if (relatedPenilaian.length > 0) {
+      // Delete all related penilaian first (cascade delete)
+      await prisma.penilaian.deleteMany({
+        where: { KRITERIA_ID: id },
+      });
+
+      console.log(`Deleted ${relatedPenilaian.length} related penilaian records for kriteria ${id}`);
+    }
+
+    // Now delete the kriteria
     await prisma.kriteria.delete({
       where: { ID: id },
     });
-    return NextResponse.json({ message: 'Kriteria deleted successfully' }, { status: 200 });
+
+    const message = relatedPenilaian.length > 0
+      ? `Kriteria "${existingKriteria.NAMA}" berhasil dihapus beserta ${relatedPenilaian.length} data penilaian terkait`
+      : `Kriteria "${existingKriteria.NAMA}" berhasil dihapus`;
+
+    return NextResponse.json({
+      message,
+      deletedPenilaianCount: relatedPenilaian.length
+    }, { status: 200 });
   } catch (error: any) {
     console.error('Error deleting kriteria:', error);
     if (error.code === 'P2025') { // Not found error
       return NextResponse.json({ message: 'Kriteria not found' }, { status: 404 });
+    }
+    if (error.code === 'P2003') { // Foreign key constraint error
+      return NextResponse.json({
+        message: 'Tidak dapat menghapus kriteria karena masih digunakan dalam data penilaian. Hapus data penilaian terkait terlebih dahulu.',
+        code: 'FOREIGN_KEY_CONSTRAINT'
+      }, { status: 409 });
     }
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
   }

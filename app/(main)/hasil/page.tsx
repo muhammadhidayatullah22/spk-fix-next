@@ -56,22 +56,157 @@ export default function HasilPage() {
       return;
     }
 
-    // Simple print using browser's native print function
-    try {
-      // Add print class to body to trigger print styles
-      document.body.classList.add('printing');
-
-      // Use setTimeout to ensure styles are applied
-      setTimeout(() => {
-        window.print();
-        // Remove print class after printing
-        document.body.classList.remove('printing');
-      }, 100);
-    } catch (error) {
-      console.error('Print error:', error);
-      alert('Gagal mencetak. Silakan coba lagi atau gunakan Ctrl+P.');
-      document.body.classList.remove('printing');
+    // Create a new window for printing
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      alert('Popup diblokir. Silakan izinkan popup untuk mencetak.');
+      return;
     }
+
+    // Get the print content
+    const printContent = printRef.current;
+    if (!printContent) {
+      alert('Konten tidak ditemukan.');
+      printWindow.close();
+      return;
+    }
+
+    // Create print HTML
+    const printHTML = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Hasil Penentuan Siswa Berprestasi</title>
+          <style>
+            @page {
+              margin: 1.5cm;
+              size: A4;
+            }
+
+            body {
+              font-family: 'Times New Roman', serif;
+              font-size: 12px;
+              line-height: 1.4;
+              color: black;
+              background: white;
+              margin: 0;
+              padding: 0;
+            }
+
+            .print-header {
+              text-align: center;
+              margin-bottom: 20px;
+              border-bottom: 2px solid black;
+              padding-bottom: 10px;
+            }
+
+            .print-header h1 {
+              font-size: 18px;
+              margin: 0 0 5px 0;
+              font-weight: bold;
+            }
+
+            .print-header p {
+              font-size: 14px;
+              margin: 0;
+              color: #666;
+            }
+
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-top: 10px;
+            }
+
+            th, td {
+              border: 1px solid black;
+              padding: 8px 4px;
+              text-align: left;
+              font-size: 11px;
+            }
+
+            th {
+              background-color: #f0f0f0;
+              font-weight: bold;
+              font-size: 10px;
+              text-transform: uppercase;
+            }
+
+            .status-badge {
+              padding: 2px 4px;
+              border: 1px solid black;
+              font-size: 9px;
+              display: inline-block;
+            }
+
+            .print-footer {
+              text-align: center;
+              margin-top: 20px;
+              border-top: 1px solid black;
+              padding-top: 10px;
+              font-size: 10px;
+              color: #666;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="print-header">
+            <h1>Hasil Penentuan Siswa Berprestasi</h1>
+            <p>Metode Simple Additive Weighting (SAW)</p>
+            <p style="font-size: 10px; margin-top: 5px;">
+              Dicetak pada: ${new Date().toLocaleDateString('id-ID', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}
+            </p>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Peringkat</th>
+                <th>Nama Siswa</th>
+                <th>NIS</th>
+                <th>Kelas</th>
+                <th>Nilai SAW</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${displayResults.map((result, index) => {
+                const originalIndex = results.findIndex(r => r.siswa.ID === result.siswa.ID);
+                let status = 'Standar';
+                if (index < 3) status = 'Berprestasi';
+                else if (index < 10) status = 'Potensial';
+
+                return `
+                  <tr>
+                    <td>#${originalIndex + 1}</td>
+                    <td>${result.siswa.NAMA}</td>
+                    <td>${result.siswa.NIS}</td>
+                    <td>${result.siswa.KELAS}</td>
+                    <td>${(result.totalScore || 0).toFixed(4)}</td>
+                    <td><span class="status-badge">${status}</span></td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        </body>
+      </html>
+    `;
+
+    // Write content and print
+    printWindow.document.write(printHTML);
+    printWindow.document.close();
+
+    // Wait for content to load then print
+    printWindow.onload = () => {
+      printWindow.print();
+      printWindow.close();
+    };
   };
 
   const handleDownloadPDF = async () => {
@@ -352,22 +487,22 @@ export default function HasilPage() {
       </div>
 
       {/* Results Table */}
-      <div ref={printRef} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        {/* Print Header - Hidden on screen, visible on print */}
-        <div className="print-header hidden print:block">
-          <h1>Hasil Penentuan Siswa Berprestasi</h1>
-          <p>Metode Simple Additive Weighting (SAW)</p>
-        </div>
-
-        {/* Print Date - Hidden on screen, visible on print */}
-        <div className="print-date hidden print:block">
-          Dicetak pada: {new Date().toLocaleDateString('id-ID', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-          })}
-        </div>
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden print:shadow-none print:border-none print:rounded-none">
+        {/* Print-only content */}
+        <div ref={printRef} className="print-content">
+          {/* Print Header - Hidden on screen, visible on print */}
+          <div className="hidden print:block print:text-center print:mb-6">
+            <h1 className="text-2xl font-bold text-black mb-2">Hasil Penentuan Siswa Berprestasi</h1>
+            <p className="text-gray-700 mb-2">Metode Simple Additive Weighting (SAW)</p>
+            <p className="text-sm text-gray-600">
+              Dicetak pada: {new Date().toLocaleDateString('id-ID', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}
+            </p>
+          </div>
 
         {loading ? (
           <div className="p-8 text-center">
@@ -396,10 +531,6 @@ export default function HasilPage() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <div className="p-6 print:block hidden">
-              <h1 className="text-2xl font-bold text-center mb-4">Hasil Penentuan Siswa Berprestasi</h1>
-              <p className="text-center text-gray-600 mb-6">Metode Simple Additive Weighting (SAW)</p>
-            </div>
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
@@ -478,12 +609,13 @@ export default function HasilPage() {
             </table>
 
             {/* Print Footer - Hidden on screen, visible on print */}
-            <div className="print-footer hidden print:block">
-              <p>© 2024 SPK SAW - Sistem Penentuan Siswa Berprestasi</p>
-              <p>Total {displayResults.length} siswa dari {results.length} siswa keseluruhan</p>
+            <div className="hidden print:block print:mt-6 print:pt-4 print:border-t print:border-gray-300 print:text-center">
+              <p className="text-sm text-gray-600">© 2024 SPK SAW - Sistem Penentuan Siswa Berprestasi</p>
+              <p className="text-sm text-gray-600">Total {displayResults.length} siswa dari {results.length} siswa keseluruhan</p>
             </div>
           </div>
         )}
+        </div>
       </div>
     </div>
   );
