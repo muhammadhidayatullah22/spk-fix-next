@@ -222,12 +222,12 @@ export default function SiswaPage() {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NIS</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kelas</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Orang Tua</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alamat</th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Nama</th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">NIS</th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Kelas</th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Orang Tua</th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Alamat</th>
+                    <th className="px-6 py-3 text-right text-sm font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -237,24 +237,24 @@ export default function SiswaPage() {
                         <div className="flex items-center">
                           <div className="flex-shrink-0 h-10 w-10">
                             <div className="h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
-                              <span className="text-sm font-medium text-white">
+                              <span className="text-xs font-medium text-white">
                                 {siswa.NAMA.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
                               </span>
                             </div>
                           </div>
                           <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">{siswa.NAMA}</div>
+                            <div className="text-xs font-medium text-gray-900 uppercase">{siswa.NAMA}</div>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{siswa.NIS}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-900 uppercase">{siswa.NIS}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                        <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 uppercase">
                           {siswa.KELAS}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{siswa.NAMA_ORANG_TUA || '-'}</td>
-                      <td className="px-6 py-4 text-sm text-gray-900 max-w-xs truncate">{siswa.ALAMAT || '-'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-900 uppercase">{siswa.NAMA_ORANG_TUA || '-'}</td>
+                      <td className="px-6 py-4 text-xs text-gray-900 max-w-xs truncate uppercase">{siswa.ALAMAT || '-'}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex justify-end space-x-2">
                           {canUpdate(user as User, 'student') && (

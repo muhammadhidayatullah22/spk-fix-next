@@ -92,7 +92,7 @@ const KriteriaModal: React.FC<KriteriaModalProps> = ({ isOpen, onClose, onSave, 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center z-50 p-4">
+    <div className="fixed inset-0 backdrop-blur-xs bg-opacity-75 flex justify-center items-center z-50 p-4">
       <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-lg mx-auto border border-gray-200">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-gray-800">
@@ -177,6 +177,7 @@ const KriteriaModal: React.FC<KriteriaModalProps> = ({ isOpen, onClose, onSave, 
               variant="secondary"
               onClick={onClose}
               disabled={saving}
+              className='bg-gradient-to-r from-gray-600 to-gray-300 hover:from-gray-700 hover:to-gray-300'
             >
               Batal
             </Button>
@@ -191,7 +192,7 @@ const KriteriaModal: React.FC<KriteriaModalProps> = ({ isOpen, onClose, onSave, 
                   </svg>
                 ) : undefined
               }
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+              className="bg-gradient-to-r from-blue-600 to-blue-300 hover:from-blue-700 hover:to-blue-300"
             >
               {editingKriteria ? 'Simpan Perubahan' : 'Tambah Kriteria'}
             </Button>

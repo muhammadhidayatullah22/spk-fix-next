@@ -99,7 +99,7 @@ const UserModal: React.FC<UserModalProps> = ({ isOpen, onClose, onSave, editingU
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center z-50 p-4 animate-fade-in">
+    <div className="fixed inset-0 backdrop-blur-xs bg-opacity-75 flex justify-center items-center z-50 p-4 animate-fade-in">
       <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-lg mx-auto transform scale-95 animate-scale-in border border-gray-200">
         <h2 className="text-3xl font-bold mb-6 text-gray-800 text-center">
           {editingUser ? 'Edit Detail Pengguna' : 'Tambah Pengguna Baru'}

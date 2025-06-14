@@ -73,7 +73,7 @@ export default function SiswaModal({ isOpen, onClose, onSave, editingSiswa }: Si
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center z-50 p-4 animate-fade-in">
+    <div className="fixed inset-0 backdrop-blur-xs bg-opacity-75 flex justify-center items-center z-50 p-4 animate-fade-in">
       <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-lg mx-auto transform scale-95 animate-scale-in border border-gray-200">
         <h2 className="text-3xl font-bold mb-6 text-gray-800 text-center">{editingSiswa ? 'Edit Detail Siswa' : 'Tambah Siswa Baru'}</h2>
         
@@ -113,7 +113,7 @@ export default function SiswaModal({ isOpen, onClose, onSave, editingSiswa }: Si
               type="submit"
               variant="primary"
               loading={saving}
-              className="bg-indigo-600 hover:bg-indigo-700"
+              className="bg-gradient-to-r from-blue-600 to-blue-300 hover:from-blue-700 hover:to-blue-300"
             >
               {editingSiswa ? 'Simpan Perubahan' : 'Tambah Siswa'}
             </Button>

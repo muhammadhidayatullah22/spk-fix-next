@@ -171,7 +171,6 @@ export default function HasilPage() {
                 <th>NIS</th>
                 <th>Kelas</th>
                 <th>Nilai SAW</th>
-                <th>Status</th>
               </tr>
             </thead>
             <tbody>
@@ -183,12 +182,11 @@ export default function HasilPage() {
 
                 return `
                   <tr>
-                    <td>#${originalIndex + 1}</td>
+                    <td>${originalIndex + 1}</td>
                     <td>${result.siswa.NAMA}</td>
                     <td>${result.siswa.NIS}</td>
                     <td>${result.siswa.KELAS}</td>
                     <td>${(result.totalScore || 0).toFixed(4)}</td>
-                    <td><span class="status-badge">${status}</span></td>
                   </tr>
                 `;
               }).join('')}
@@ -554,7 +552,7 @@ export default function HasilPage() {
                             <span className="text-2xl mr-2">{medal.emoji}</span>
                           )}
                           <div className={`text-lg font-bold ${medal ? medal.color : 'text-gray-900'}`}>
-                            #{originalIndex + 1}
+                            {originalIndex + 1}
                           </div>
                         </div>
                       </td>

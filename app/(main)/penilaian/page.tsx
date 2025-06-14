@@ -58,7 +58,7 @@ const PenilaianModal: React.FC<PenilaianModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center z-50 p-4">
+    <div className="fixed inset-0 backdrop-blur-xs  bg-opacity-75 flex justify-center items-center z-50 p-4">
       <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-4xl mx-auto border border-gray-200 max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
           <div>
@@ -471,7 +471,6 @@ export default function PenilaianPage() {
                         </div>
                         <div className="ml-4">
                           <div className="text-sm font-medium text-gray-900">{siswa.NAMA}</div>
-                          <div className="text-sm text-gray-500">ID: {siswa.ID}</div>
                         </div>
                       </div>
                     </td>

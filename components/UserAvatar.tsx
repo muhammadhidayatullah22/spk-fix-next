@@ -28,7 +28,7 @@ const UserAvatar: React.FC<UserAvatarProps> = ({
     lg: 'w-12 h-12 text-sm'
   };
 
-  const baseClasses = `${sizeClasses[size]} bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center ${className}`;
+  const baseClasses = `${sizeClasses[size]} border border-gray-400 rounded-full flex items-center justify-center ${className}`;
 
   if (loading) {
     return (
@@ -45,11 +45,11 @@ const UserAvatar: React.FC<UserAvatarProps> = ({
         </svg>
       </div>
     );
-  }
+  } 
 
   return (
     <div className={baseClasses}>
-      <span className="font-semibold text-white">
+      <span className="font-semibold text-black">
         {getUserInitials(nama)}
       </span>
     </div>

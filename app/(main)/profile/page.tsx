@@ -220,12 +220,7 @@ export default function ProfilePage() {
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Informasi Akun</h2>
             
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-500 mb-1">ID Pengguna</label>
-                <p className="text-lg font-semibold text-gray-900">#{user?.id}</p>
-              </div>
-              
+            <div className="space-y-4">              
               <div>
                 <label className="block text-sm font-medium text-gray-500 mb-1">Nama Lengkap</label>
                 <p className="text-lg font-semibold text-gray-900">{user?.nama}</p>
