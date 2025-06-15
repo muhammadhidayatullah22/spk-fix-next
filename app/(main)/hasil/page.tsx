@@ -566,7 +566,7 @@ export default function HasilPage() {
                             </div>
                           </div>
                           <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">{result.siswa.NAMA}</div>
+                            <div className="text-sm font-medium text-gray-900 uppercase">{result.siswa.NAMA}</div>
                             <div className="text-sm text-gray-500">NIS: {result.siswa.NIS}</div>
                           </div>
                         </div>
@@ -580,7 +580,7 @@ export default function HasilPage() {
                         <div className="text-sm font-medium text-gray-900">{(result.totalScore || 0).toFixed(4)}</div>
                         <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
                           <div
-                            className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full"
+                            className="bg-linear-to-r from-cyan-500 to-blue-500 h-2 rounded-full"
                             style={{ width: `${(result.totalScore / (results[0]?.totalScore || 1)) * 100}%` }}
                           ></div>
                         </div>

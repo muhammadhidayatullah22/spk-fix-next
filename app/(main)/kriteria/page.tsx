@@ -276,7 +276,7 @@ export default function KriteriaPage() {
                           </div>
                         </div>
                         <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">{kriteria.NAMA}</div>
+                          <div className="text-sm font-medium text-gray-900 uppercase">{kriteria.NAMA}</div>
                           
                         </div>
                       </div>

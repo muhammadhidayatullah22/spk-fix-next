@@ -51,8 +51,8 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
                 </svg>
               </div>
               <div>
-                <h1 className="text-xl font-bold text-white">SPK SAW</h1>
-                <p className="text-xs text-slate-400">Sistem Penentuan Siswa</p>
+                <h1 className="text-md font-bold text-white">SMPIT AL-MUHAJIRIN</h1>
+                <p className="text-xs text-slate-400">Penentuan Siswa Berprestasi</p>
               </div>
             </div>
 

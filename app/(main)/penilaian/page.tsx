@@ -470,7 +470,7 @@ export default function PenilaianPage() {
                           </div>
                         </div>
                         <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">{siswa.NAMA}</div>
+                          <div className="text-sm font-medium text-gray-900 uppercase">{siswa.NAMA}</div>
                         </div>
                       </div>
                     </td>
